@@ -1,0 +1,35 @@
+# Проверки перед коммитом: pre-commit install
+#
+# Сначала Ruff проверяет и форматирует код, затем wemake-python-styleguide
+# проверяет стиль обоих Python-инструментов. Типы (pyrefly) и тесты запускаются
+# вручную в каталоге инструмента, см. packages/*/README.md.
+# Конфигурация ruff у каждого инструмента своя (packages/*/pyproject.toml);
+# ruff сам берёт ту, что лежит ближе к проверяемому файлу.
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.8
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/wemake-services/wemake-python-styleguide
+    rev: 1.9.0
+    hooks:
+      - id: wemake-python-styleguide
+        name: wemake-python-styleguide (md-gost)
+        files: ^packages/md-gost/.*\.py$
+        args: [--config=packages/md-gost/setup.cfg]
+      - id: wemake-python-styleguide
+        name: wemake-python-styleguide (md-gost-lint)
+        files: ^packages/md-gost-lint/.*\.py$
+        args: [--config=packages/md-gost-lint/setup.cfg]
+      - id: wemake-python-styleguide
+        name: wemake-python-styleguide (md-gost-build)
+        files: ^packages/md-gost-build/.*\.py$
+        args: [--config=packages/md-gost-build/setup.cfg]
+      - id: wemake-python-styleguide
+        name: wemake-python-styleguide (IDEF0)
+        files: ^packages/idef0/.*\.py$
+        args: [--config=packages/idef0/setup.cfg]

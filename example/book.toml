@@ -1,0 +1,25 @@
+#:schema ../packages/md-gost-build/book.schema.json
+
+output = "example.docx"
+prefer_vector = true
+
+chapters = [
+  "01_INTRO.md",
+  "02_CHAPTER_1.md",
+  "03_REFERENCES.md",
+  "04_APPENDIX_A.md",
+  "05_APPENDIX_B.md",
+  "06_APPENDIX_C.md",
+]
+
+# Presence of the [frame] table enables the GOST frame (рамка + основная надпись).
+# All keys are optional; omitted ones fall back to built-in defaults.
+[frame]
+author = "Иванов И.И."
+checker = "Петров П.П."
+title = "Демонстрационный отчёт по инструменту md-to-gost"
+org = "ДГТУ, кафедра «ИТ»"
+designation = "ДП.090301.001"
+sheets = "15"
+first_sheet = "1"
+page_start = 1

@@ -1,0 +1,70 @@
+# md-gost-build — самостоятельный инструмент: собирает .docx по ГОСТ из Markdown.
+# Зависимости также перечислены в корневом pyproject.toml для установки пакета.
+#
+#   uv run --group dev pytest        — тесты (нужны pandoc и plantuml)
+#   uv run --group dev pytest -m "not build"   — только быстрые
+#   ruff check . && ruff format .    — стиль и раскладка
+#   pyrefly check                    — типы
+
+[project]
+name = "md-gost-build"
+version = "0.1.0"
+description = "Сборка .docx по ГОСТ из директории с Markdown-главами"
+requires-python = ">=3.11"
+dependencies = [
+    "pypandoc>=1.17",       # поиск исполняемого файла Pandoc
+    "python-docx>=1.1.0",   # шаблон и постобработка документа
+    "lxml>=5.0.0",          # правка XML при добавлении рамки
+]
+
+[project.optional-dependencies]
+plots = ["matplotlib", "seaborn"]
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
+markers = [
+    "build: требует pandoc и plantuml, собирает настоящий .docx",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100                  # общая для check и format
+extend-exclude = [".md-to-gost", ".venv"]
+
+[tool.ruff.lint]
+select = ["ALL"]
+# D203/D213 несовместимы с D211/D212; Ruff оставляет вторую пару.
+ignore = ["CPY001", "D203", "D213"]
+# Кириллица и русская пунктуация в строках, docstring и комментариях.
+allowed-confusables = ["А", "Б", "В", "Г", "Д", "Е", "Ж", "З", "И", "Й", "К", "Л", "М", "Н", "О", "П", "Р", "С", "Т", "У", "Ф", "Х", "Ц", "Ч", "Ш", "Щ", "Ъ", "Ы", "Ь", "Э", "Ю", "Я", "а", "б", "в", "г", "д", "е", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь", "э", "ю", "я", "Ё", "ё", "–", "—"]
+
+[tool.ruff.lint.per-file-ignores]
+# В тестах docstring не обязателен, assert разрешён.
+# INP001: каталог tests не является пакетом.
+"tests/**" = ["S101", "D", "INP001", "S603", "S314"]
+# Сборка вызывает pandoc, PlantUML и собственные скрипты с фиксированным argv.
+"gost_builder/lint.py" = ["S603"]
+"gost_builder/render.py" = ["S603"]
+# python-docx отдаёт OOXML только через _element/_p/_tbl, без публичного типа узла.
+"gost_builder/postprocess/**" = ["SLF001", "ANN401"]
+# Параметры стиля Word передаются в python-docx как нетипизированные поля.
+"gost_builder/reference/formatting.py" = ["ANN401"]
+# Скрипт графика — произвольный пользовательский код, его пространство имён не типизируется.
+"gost_builder/plots.py" = ["ANN401", "BLE001"]
+# Тест проверяет служебные узлы секции, которые python-docx не публикует.
+"tests/test_appendix_sections.py" = ["SLF001"]
+
+[tool.pyrefly]
+preset = "strict"
+project-includes = ["**/*.py"]
+project-excludes = ["**/__pycache__/**", "**/.venv/**"]
+python-version = "3.11"
+# Тесты импортируют conftest по соглашению pytest (rootdir в sys.path).
+search-path = [".", "tests"]
+# python-docx и lxml лежат в .venv этого каталога. Pyrefly находит его сам:
+# bin/python на Unix, Scripts/python.exe на Windows.

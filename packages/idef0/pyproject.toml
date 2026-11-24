@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gost-idef0"
+version = "0.1.0"
+description = "Декларативное построение диаграмм IDEF0"
+requires-python = ">=3.11"
+dependencies = ["matplotlib"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "pyrefly",
+    "ruff==0.16.8",
+    "seaborn",
+    "wemake-python-styleguide==1.9.0",
+]
+
+[tool.setuptools]
+packages = ["idef0"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["ALL"]
+# D203/D213 несовместимы с D211/D212; Ruff оставляет вторую пару.
+ignore = ["CPY001", "D203", "D213"]
+# Кириллица и русская пунктуация в документации и примерах.
+allowed-confusables = ["А", "Б", "В", "Г", "Д", "Е", "Ж", "З", "И", "Й", "К", "Л", "М", "Н", "О", "П", "Р", "С", "Т", "У", "Ф", "Х", "Ц", "Ч", "Ш", "Щ", "Ъ", "Ы", "Ь", "Э", "Ю", "Я", "а", "б", "в", "г", "д", "е", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь", "э", "ю", "я", "Ё", "ё", "–", "—"]
+
+[tool.ruff.lint.per-file-ignores]
+# В тестах docstring не обязателен, assert разрешён.
+# INP001: каталоги tests и e2e не являются пакетами.
+"tests/**" = ["S101", "D", "INP001"]
+"e2e/**" = ["S101", "D", "INP001"]
+
+[tool.pyrefly]
+preset = "strict"
+project-includes = ["**/*.py"]
+search-path = [".", "tests"]
+# matplotlib и pytest лежат в .venv этого каталога. Pyrefly находит его сам:
+# bin/python на Unix, Scripts/python.exe на Windows.
+python-version = "3.11"

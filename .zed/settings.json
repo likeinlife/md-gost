@@ -1,0 +1,14 @@
+{
+  "languages": {
+    "Markdown": {
+      "language_servers": ["md-gost-lsp", "..."],
+      "semantic_tokens": "combined",
+      "formatter": { "language_server": { "name": "md-gost-lsp" } },
+      "remove_trailing_whitespace_on_save": false
+    },
+    // ty не входит в набор серверов по умолчанию. "..." оставляет ruff.
+    "Python": {
+      "language_servers": ["ty", "!basedpyright", "!pyright", "!pylsp", "..."]
+    }
+  }
+}

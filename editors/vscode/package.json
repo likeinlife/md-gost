@@ -1,0 +1,77 @@
+{
+  "name": "md-gost-lsp",
+  "displayName": "Markdown ГОСТ",
+  "description": "Проверка глав и автодополнение ссылок и таблиц для md-to-gost.",
+  "version": "0.1.0",
+  "publisher": "md-gost",
+  "author": "md-gost",
+  "license": "UNLICENSED",
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "categories": ["Linters", "Formatters", "Programming Languages"],
+  "keywords": ["markdown", "gost", "md-to-gost"],
+  "activationEvents": ["onLanguage:markdown"],
+  "main": "./out/extension.js",
+  "capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": false,
+      "description": "Расширение запускает локальную команду md-gost lsp."
+    }
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "md-gost-lsp.restart",
+        "title": "Перезапустить сервер",
+        "category": "Markdown ГОСТ"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Markdown ГОСТ",
+      "properties": {
+        "md-gost-lsp.path": {
+          "type": "string",
+          "default": "md-gost",
+          "description": "Команда или полный путь к md-gost. Нужен, если редактор не видит PATH терминала."
+        },
+        "md-gost-lsp.args": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": ["lsp"],
+          "description": "Аргументы запуска языкового сервера. По умолчанию это подкоманда lsp."
+        },
+        "md-gost-lsp.trace.server": {
+          "scope": "window",
+          "type": "string",
+          "enum": ["off", "messages", "verbose"],
+          "default": "off",
+          "description": "Трассировка обмена между редактором и md-gost-lsp. Пишется в канал вывода md-gost-lsp."
+        }
+      }
+    },
+    "configurationDefaults": {
+      "[markdown]": {
+        "editor.defaultFormatter": "md-gost.md-gost-lsp",
+        "editor.semanticHighlighting.enabled": true,
+        "files.trimTrailingWhitespace": false
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -p ./ -w",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.96.0",
+    "@vscode/vsce": "^3.6.0",
+    "typescript": "^5.9.2"
+  }
+}

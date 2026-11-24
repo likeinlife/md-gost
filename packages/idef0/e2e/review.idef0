@@ -1,0 +1,7 @@
+block A1 [color=blue fill=#eaf2fd text_color=#163c6b] : Подготовить проект
+block A2 [color=green fill=#edf7ed text_color=#204c29] : Проверить проект
+
+input -> A1 : Заявка
+A1 -> A2 [color=blue text_color=blue] : Проект
+A2 -> output [color=green text_color=green] : Принятый проект
+A2 -> A1.control [color=orange text_color=orange] : Замечания

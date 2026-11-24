@@ -1,0 +1,10 @@
+@startuml
+!include style.iuml
+
+node "АРМ пользователя" as arm
+node "Сервер приложений" as app
+database "СУБД" as db
+
+arm --> app : HTTPS
+app --> db : SQL
+@enduml

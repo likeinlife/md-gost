@@ -1,0 +1,11 @@
+id = "md-gost-lsp"
+name = "Markdown ГОСТ"
+version = "0.1.0"
+schema_version = 1
+authors = ["md-gost"]
+description = "Проверка глав и автодополнение ссылок и таблиц для md-to-gost."
+
+[language_servers.md-gost-lsp]
+name = "md-gost-lsp"
+languages = ["Markdown"]
+opt_in_languages = ["Markdown"]

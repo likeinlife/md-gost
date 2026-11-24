@@ -1,0 +1,15 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "watch",
+      "path": "editors/vscode",
+      "label": "watch vscode extension",
+      "isBackground": true,
+      "problemMatcher": "$tsc-watch",
+      "group": { "kind": "build", "isDefault": true },
+      "presentation": { "reveal": "never", "panel": "dedicated" }
+    }
+  ]
+}

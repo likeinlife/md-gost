@@ -1,0 +1,5 @@
+' Общее оформление диаграмм. Файл .iuml подключается из соседних .puml
+' и сам по себе в документ не вставляется.
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Times New Roman

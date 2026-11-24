@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Манифест book.toml",
+  "description": "Настройки сборки документа md-to-gost.",
+  "type": "object",
+  "properties": {
+    "chapters": {
+      "description": "Файлы глав в порядке сборки.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "output": {
+      "description": "Путь выходного файла.",
+      "type": "string",
+      "default": "output.docx"
+    },
+    "frame": {
+      "description": "Параметры рамки ГОСТ.",
+      "oneOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "author": {
+              "type": [
+                "string",
+                "integer"
+              ],
+              "default": "Иванов И.И."
+            },
+            "checker": {
+              "type": [
+                "string",
+                "integer"
+              ],
+              "default": "Петров П.П."
+            },
+            "title": {
+              "type": [
+                "string",
+                "integer"
+              ],
+              "default": "Отчет по учебной технологической (проектно-технологической) практике"
+            },
+            "org": {
+              "type": [
+                "string",
+                "integer"
+              ],
+              "default": "ДГТУ, кафедра «ИТ»"
+            },
+            "designation": {
+              "type": [
+                "string",
+                "integer"
+              ],
+              "default": "УП.280000.000"
+            },
+            "sheets": {
+              "type": [
+                "string",
+                "integer"
+              ],
+              "default": "55"
+            },
+            "first_sheet": {
+              "type": [
+                "string",
+                "integer"
+              ],
+              "default": "1"
+            },
+            "page_start": {
+              "type": [
+                "string",
+                "integer"
+              ],
+              "default": 1
+            }
+          },
+          "additionalProperties": false
+        }
+      ],
+      "default": false
+    },
+    "toc": {
+      "description": "Добавить оглавление.",
+      "type": "boolean",
+      "default": true
+    },
+    "number_sections": {
+      "description": "Нумеровать разделы.",
+      "type": "boolean",
+      "default": false
+    },
+    "prefer_vector": {
+      "description": "Создавать диаграммы и графики в SVG.",
+      "type": "boolean",
+      "default": false
+    },
+    "page_break_before_h1": {
+      "description": "Начинать заголовки первого уровня с новой страницы.",
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "chapters"
+  ],
+  "additionalProperties": false
+}

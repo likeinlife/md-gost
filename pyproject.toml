@@ -1,0 +1,64 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "md-gost"
+version = "0.1.0"
+description = "Сборка и проверка документов по ГОСТ из Markdown"
+requires-python = ">=3.11"
+dependencies = [
+    "pypandoc>=1.17",
+    "python-docx>=1.1.0",
+    "lxml>=5.0.0",
+    "typer>=0.15",
+]
+
+[project.optional-dependencies]
+plots = ["matplotlib", "seaborn"]
+lsp = ["pygls>=2.1,<3"]
+
+[project.scripts]
+md-gost = "md_gost.cli:main"
+
+[tool.setuptools]
+include-package-data = false
+packages = [
+    "gost_builder",
+    "gost_builder.frame",
+    "gost_builder.reference",
+    "gost_builder.postprocess",
+    "gost_builder.postprocess.tables",
+    "gost_builder.idef0",
+    "gost_lint",
+    "gost_lint.markdown",
+    "gost_lint.rules",
+    "gost_lint.lsp",
+    "gost_docx_lint",
+    "md_gost",
+]
+
+[tool.setuptools.package-dir]
+gost_builder = "packages/md-gost-build/gost_builder"
+gost_lint = "packages/md-gost-lint/gost_lint"
+gost_docx_lint = "packages/md-gost-postlint/gost_docx_lint"
+md_gost = "packages/md-gost/md_gost"
+# Only the plot subprocess imports this private copy as idef0.
+# The standalone gost-idef0 distribution owns the top-level import.
+"gost_builder.idef0" = "packages/idef0/idef0"
+
+[tool.setuptools.package-data]
+gost_builder = ["filters/*.lua", "frame/templates/*.xml"]
+
+[tool.ty.environment]
+python = ".venv"
+root = [
+    "packages/md-gost",
+    "packages/md-gost-lint",
+    "packages/md-gost-build",
+    "packages/md-gost-postlint",
+    "packages/idef0",
+]
+
+[tool.ruff]
+exclude = ["example"]

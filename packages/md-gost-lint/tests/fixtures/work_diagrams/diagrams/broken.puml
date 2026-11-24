@@ -1,0 +1,6 @@
+@startuml
+!include nope.iuml
+node "АРМ" as arm
+node "Сервер" as app
+arm --> app
+@enduml

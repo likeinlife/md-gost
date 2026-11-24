@@ -1,0 +1,55 @@
+# md-gost-lint — самостоятельный инструмент: свой набор проверок, свои зависимости.
+# Сборщик (packages/md-gost-build) вызывает его из pipeline, команда md-gost — снаружи.
+# Конфигурация у каждого инструмента своя.
+#
+#   uv run --group dev pytest        — тесты
+#   ruff check . && ruff format .    — стиль и раскладка
+#   pyrefly check                    — типы
+
+[project]
+name = "md-gost-lint"
+version = "0.1.0"
+description = "Линтер Markdown-исходников учебных работ, собираемых в ГОСТ-.docx"
+requires-python = ">=3.11"
+dependencies = []                  # только стандартная библиотека
+
+[dependency-groups]
+dev = ["pytest>=8", "pygls>=2.1,<3", "pypandoc>=1.17"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100                  # общая для check и format
+extend-exclude = ["tests/fixtures"]
+
+[tool.ruff.lint]
+select = ["ALL"]
+# D203/D213 несовместимы с D211/D212; Ruff оставляет вторую пару.
+ignore = ["CPY001", "D203", "D213"]
+# Кириллица и русская пунктуация в строках, docstring и комментариях.
+allowed-confusables = ["А", "Б", "В", "Г", "Д", "Е", "Ж", "З", "И", "Й", "К", "Л", "М", "Н", "О", "П", "Р", "С", "Т", "У", "Ф", "Х", "Ц", "Ч", "Ш", "Щ", "Ъ", "Ы", "Ь", "Э", "Ю", "Я", "а", "б", "в", "г", "д", "е", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь", "э", "ю", "я", "Ё", "ё", "–", "—"]
+
+[tool.ruff.lint.per-file-ignores]
+# В тестах docstring не обязателен, assert разрешён.
+# INP001: каталог tests не является пакетом.
+"tests/**" = ["S101", "D", "INP001", "S603"]
+# Импорт сервера и pypandoc отложен: команда и линтер работают без этих пакетов.
+"gost_lint/lsp/cli.py" = ["PLC0415"]
+"gost_lint/lsp/fence_languages.py" = ["PLC0415"]
+# Пакет только реэкспортирует модель документа.
+"gost_lint/markdown/__init__.py" = ["D104"]
+# Значения mdlint.toml приходят из tomllib без статического типа.
+"gost_lint/config_validation.py" = ["ANN401"]
+# Ответ JSON-RPC не имеет статического типа.
+"tests/lsp_client.py" = ["ANN401"]
+
+[tool.pyrefly]
+preset = "strict"
+project-includes = ["**/*.py"]
+project-excludes = ["**/__pycache__/**", "tests/fixtures/**"]
+python-version = "3.11"
+search-path = [".", "tests"]

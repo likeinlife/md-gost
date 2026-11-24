@@ -1,0 +1,3 @@
+output = "out.docx"
+toc = false
+chapters = ["CHAPTER_1.md"]

@@ -1,0 +1,15 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/packages/md-gost",
+    "${workspaceFolder}/packages/md-gost-lint",
+    "${workspaceFolder}/packages/md-gost-build",
+    "${workspaceFolder}/packages/md-gost-postlint",
+    "${workspaceFolder}/packages/idef0"
+  ],
+  "[markdown]": {
+    "editor.defaultFormatter": "md-gost.md-gost-lsp",
+    "editor.semanticHighlighting.enabled": true,
+    "files.trimTrailingWhitespace": false
+  }
+}

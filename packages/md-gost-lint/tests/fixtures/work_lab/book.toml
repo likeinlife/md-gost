@@ -1,0 +1,3 @@
+output = "lab.docx"
+toc = false
+chapters = ["lab_solution.md"]
