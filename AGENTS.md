@@ -14,14 +14,17 @@ one demonstration document.
 - **Output:** one `.docx` per directory that contains a `book.toml` (Times New Roman
   14pt, 1.5 line spacing, margins 30/10/20/20mm, bordered tables).
 
-A human-facing overview lives in `README.md` (Russian). This file covers what
-an agent needs on top of it.
+A human-facing overview lives in `README.md` (Russian). Install steps for
+Pandoc, PlantUML and Graphviz live in `INSTALL.md`. Contributor checks live in
+`CONTRIBUTING.md`. This file covers what an agent needs on top of them.
 
 ## Repository layout
 
 ```
 .
 ├── README.md                  # repository overview (Russian, for humans)
+├── INSTALL.md                 # Pandoc, PlantUML, Graphviz
+├── CONTRIBUTING.md            # human contributor checks (Russian)
 ├── CLAUDE.md                  # one line: loads this file
 ├── AGENTS.md
 ├── example/                   # demonstration document (book.toml + example.docx)
@@ -65,8 +68,8 @@ cannot accumulate.
 - **python3** ≥ 3.11 (needs `tomllib`)
 
 Install steps for macOS and Windows (Homebrew, winget, Chocolatey, the
-PlantUML jar, `pypandoc.download_pandoc()`) live in the root `README.md`
-(«Требования»). On Windows `shutil.which("plantuml")` only searches `PATHEXT`,
+PlantUML jar, `pypandoc.download_pandoc()`) live in the root `INSTALL.md`.
+On Windows `shutil.which("plantuml")` only searches `PATHEXT`,
 so a lone `plantuml.jar` is invisible to it. The build scans PATH for that
 filename and runs `java -jar`. A `.bat` / `.cmd` wrapper is used only when
 `plantuml.jar` sits next to it, because Pandoc cannot execute the wrapper.

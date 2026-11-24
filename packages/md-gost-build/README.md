@@ -6,10 +6,10 @@
 md-gost build path/to/dir/
 ```
 
-Установите команды из корня репозитория через `uv tool install .` или в
-виртуальное окружение через `uv pip install .`. Порядок установки и обновления
-описан в [README репозитория](../../README.md#установка-команд). Для графиков
-используйте `uv tool install '.[plots]'` или `uv pip install '.[plots]'`.
+Установите команду из корня репозитория, см.
+[README](../../README.md#установка). Для графиков —
+`uv tool install '.[plots]'` или `uv pip install '.[plots]'`. Pandoc, PlantUML
+и Graphviz — в [INSTALL.md](../../INSTALL.md).
 
 
 Директория должна содержать манифест `book.toml` (порядок глав и имя
@@ -49,142 +49,14 @@ md-gost build path/to/dir/
 
 ## Требования
 
-Нужны Python 3.11 или новее, Pandoc 3.9.x и, если в главах есть диаграммы,
-Java, PlantUML и Graphviz (`dot`). Команды Python ставятся из корня репозитория,
-см. [README репозитория](../../README.md#установка-команд). После `winget`,
-`choco`, Homebrew и `setx` откройте новый терминал.
-
-Проверка:
-
-```bash
-pandoc -v
-java -version
-dot -V
-```
+Python 3.11 или новее, Pandoc 3.9.x и, если в главах есть диаграммы, Java,
+PlantUML и Graphviz (`dot`). Команда `md-gost` ставится из корня репозитория,
+см. [README](../../README.md#установка). Пошаговая установка программ,
+переменные `PLANTUML_JAR` и `PLANTUML`, порядок поиска jar — в
+[INSTALL.md](../../INSTALL.md).
 
 Python-зависимости (`pypandoc`, `python-docx`, `lxml`) устанавливаются вместе
 с пакетом.
-
-### Pandoc
-
-Страница установки: <https://pandoc.org/installing.html>.
-
-macOS:
-
-```bash
-brew install pandoc
-```
-
-Windows:
-
-```powershell
-winget install --source winget --exact --id JohnMacFarlane.Pandoc
-```
-
-Либо скачать бинарник через pypandoc. Каталог по умолчанию —
-`%LOCALAPPDATA%\Pandoc` на Windows и `~/Applications/pandoc` на macOS.
-Сборка спрашивает путь у `pypandoc.get_pandoc_path()` и находит этот файл,
-даже если каталог не в `PATH`. Из корня репозитория:
-
-```bash
-uv run --with pypandoc python -c "import pypandoc; pypandoc.download_pandoc()"
-```
-
-Если pypandoc уже импортируется: `python -c "import pypandoc; pypandoc.download_pandoc()"`.
-Ветка 3.9: `download_pandoc(version='3.9')`.
-
-### Graphviz
-
-`dot` нужен PlantUML для диаграмм, которые он не раскладывает сам.
-Диаграммы последовательности обычно рисуются и без него. Нет `dot` в `PATH` —
-сборка пишет предупреждение и продолжает работу.
-
-macOS:
-
-```bash
-brew install graphviz
-```
-
-Windows, страница загрузки <https://graphviz.org/download/>:
-
-```powershell
-winget install graphviz
-winget install --source winget --exact --id Graphviz.Graphviz
-choco install graphviz
-```
-
-Если `dot -V` в новом терминале не находится, добавьте в `PATH` каталог `bin`
-Graphviz.
-
-### PlantUML
-
-Проект: <https://github.com/plantuml/plantuml>.
-Релиз: <https://github.com/plantuml/plantuml/releases/tag/v1.2026.10>.
-
-macOS (формула ставит команду `plantuml` и Java):
-
-```bash
-brew install plantuml
-plantuml -version
-```
-
-Jar для Windows и для любой системы, где команды `plantuml` нет. Скачайте
-`plantuml.jar` из релиза (тот же файл, что `plantuml-1.2026.10.jar`) и
-положите его в каталог, например `K:\user\Apps\Plantuml\plantuml.jar`.
-Для этого jar нужна Java 17 или новее. Файл `plantuml-java8-1.2026.10.jar`
-в том же релизе — сборка для Java 8; укажите его через `PLANTUML_JAR`.
-
-Java на Windows:
-
-```powershell
-winget install --source winget --exact --id EclipseAdoptium.Temurin.21.JDK
-```
-
-Java на macOS, если формула `plantuml` не используется:
-
-```bash
-brew install --cask temurin
-```
-
-Поиск, первое совпадение:
-
-1. `PLANTUML_JAR` — полный путь к jar, имя файла любое.
-2. `PLANTUML` — полный путь к программе или к jar.
-3. Команда `plantuml` в `PATH` (`plantuml.exe` на Windows, скрипт Homebrew на macOS).
-4. Файл `plantuml.jar` в любом каталоге из `PATH`.
-5. `plantuml.bat` или `plantuml.cmd` в `PATH`, и `plantuml.jar` в том же каталоге.
-
-`shutil.which("plantuml")` на Windows смотрит только `PATHEXT` (`.exe`, `.bat`,
-`.cmd`, …). Jar этим поиском не находится: сборка отдельно просматривает
-каталоги `PATH`. Pandoc не запускает `.bat` и `.cmd`. Обёртка годится, когда
-`plantuml.jar` лежит рядом: тогда вызывается `java -jar`. Имя
-`plantuml-1.2026.10.jar` по `PATH` не ищется — переименуйте файл в
-`plantuml.jar` или задайте `PLANTUML_JAR`.
-
-Windows, переменная для новых терминалов:
-
-```powershell
-setx PLANTUML_JAR "K:\user\Apps\Plantuml\plantuml.jar"
-```
-
-Тот же каталог можно добавить в пользовательский `PATH`, оставив имя
-`plantuml.jar`. Проверка:
-
-```powershell
-java -jar K:\user\Apps\Plantuml\plantuml.jar -version
-```
-
-macOS:
-
-```bash
-export PLANTUML_JAR="$HOME/Apps/plantuml.jar"
-```
-
-Без Java подойдёт нативный файл из того же релиза:
-`native-plantuml-windows-amd64-1.2026.10.zip` или
-`native-plantuml-macos-arm64-1.2026.10.zip`. Распакуйте его и укажите
-`PLANTUML` на исполняемый файл, либо положите файл в `PATH` под именем
-`plantuml.exe` (Windows) или `plantuml` (macOS).
 
 ## Быстрый старт
 
@@ -890,20 +762,21 @@ $x_i$ — оценка i-го критерия.
 
 - **`md-lint found errors`** — pre-lint нашёл нарушения правил оформления текста;
   они перечислены выше сообщения. Исправьте их или соберите с `--no-lint`.
-- **`pandoc not found`** — установите Pandoc: Homebrew, `winget install --source winget --exact --id JohnMacFarlane.Pandoc`
-  или `pypandoc.download_pandoc()`. См. [требования](#требования).
+- **`pandoc not found`** — нет Pandoc. Установка — в [INSTALL.md](../../INSTALL.md#pandoc).
 - **`plantuml not found on PATH`** — в главах есть ```` ```plantuml ````-блоки
   или вставленные файлы `.puml`/`.iuml`, а команда `plantuml` и файл
   `plantuml.jar` не найдены. Положите jar в каталог из `PATH` или задайте
-  `PLANTUML_JAR`. Сборка прерывается: молча выпустить документ, где вместо
-  диаграммы кусок разметки, хуже, чем упасть.
-- **`java not found on PATH`** — jar найден, а `java` нет. Поставьте JDK
-  (на Windows: `winget install --source winget --exact --id EclipseAdoptium.Temurin.21.JDK`).
+  `PLANTUML_JAR`, см. [INSTALL.md](../../INSTALL.md#plantuml). Сборка
+  прерывается: молча выпустить документ, где вместо диаграммы кусок разметки,
+  хуже, чем упасть.
+- **`java not found on PATH`** — jar найден, а `java` нет. Поставьте JDK,
+  см. [INSTALL.md](../../INSTALL.md#plantuml).
 - **`which Pandoc cannot execute`** — в `PATH` есть `plantuml.bat` или
   `plantuml.cmd`, а `plantuml.jar` рядом нет. Pandoc такой файл не запускает.
+  Порядок поиска — в [INSTALL.md](../../INSTALL.md#plantuml).
 - **`dot (Graphviz) was not found`** — предупреждение, не ошибка. Часть
-  диаграмм PlantUML рисует без `dot`. Установка: `winget install graphviz`,
-  `choco install graphviz`, `brew install graphviz`, <https://graphviz.org/download/>.
+  диаграмм PlantUML рисует без `dot`. Установка — в
+  [INSTALL.md](../../INSTALL.md#graphviz).
 - **`plantuml rendered no png/svg for: diagram_NN`** — PlantUML запустился, но эту
   диаграмму не отрисовал. Ищите синтаксическую ошибку в её теле; исходник
   остаётся в `<dir>/.md-to-gost/img/diagram_NN.puml` (для вставленного файла
