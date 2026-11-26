@@ -1,0 +1,134 @@
+# Сборка артефактов и те же проверки, что перед коммитом.
+# Ruff и wemake-python-styleguide — .pre-commit-config.yaml.
+# Pyrefly — uvx pyrefly check в каталоге каждого инструмента.
+# Версия Pyrefly совпадает с packages/idef0/uv.lock.
+
+name: Сборка и проверки
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  PYREFLY_VERSION: "1.4.1"
+
+jobs:
+  checks:
+    name: Ruff, WPS, Pyrefly
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Ruff и wemake-python-styleguide
+        uses: pre-commit/action@v3.0.1
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.11"
+          enable-cache: true
+
+      - name: Окружения для Pyrefly
+        run: |
+          for package in packages/md-gost packages/md-gost-lint packages/md-gost-build packages/idef0; do
+            uv sync --frozen --group dev --no-install-project --directory "$package"
+          done
+
+      - name: Pyrefly
+        run: |
+          status=0
+          for package in packages/md-gost packages/md-gost-lint packages/md-gost-build packages/idef0; do
+            echo "::group::$package"
+            if ! (cd "$package" && uvx "pyrefly==${PYREFLY_VERSION}" check); then
+              status=1
+            fi
+            echo "::endgroup::"
+          done
+          exit "$status"
+
+  wheel:
+    name: Python wheel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.11"
+
+      - name: Собрать wheel
+        run: uv build --wheel
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-wheel
+          path: dist/*.whl
+          if-no-files-found: error
+
+  vscode:
+    name: VS Code
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: editors/vscode
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: editors/vscode/package-lock.json
+
+      - name: Собрать VSIX
+        run: |
+          npm ci
+          npm run package -- --allow-missing-repository
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vscode-extension
+          path: editors/vscode/*.vsix
+          if-no-files-found: error
+
+  zed:
+    name: Zed
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: editors/zed
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-wasip2
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: editors/zed
+
+      - name: Собрать extension.wasm
+        run: cargo build --locked --release --target wasm32-wasip2
+
+      - name: Упаковать расширение
+        run: |
+          cp target/wasm32-wasip2/release/md_gost_lsp.wasm extension.wasm
+          tar -czf md-gost-lsp.tar.gz extension.toml extension.wasm
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: zed-extension
+          path: editors/zed/md-gost-lsp.tar.gz
+          if-no-files-found: error
