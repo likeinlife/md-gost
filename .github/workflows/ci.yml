@@ -1,12 +1,13 @@
-# Сборка артефактов и те же проверки, что перед коммитом.
-# Ruff и wemake-python-styleguide — .pre-commit-config.yaml.
-# Pyrefly — uvx pyrefly check в каталоге каждого инструмента.
-# Версия Pyrefly совпадает с packages/idef0/uv.lock.
+# Сборка артефактов и проверки стиля.
+# Ruff 0.16.8 и wemake-python-styleguide 1.9.0 — как в .pre-commit-config.yaml.
+# Pyrefly 1.4.1 — как в packages/idef0/uv.lock.
+# Push только в main: иначе один коммит в pull request запускает workflow дважды.
 
 name: Сборка и проверки
 
 on:
   push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
@@ -18,6 +19,8 @@ permissions:
   contents: read
 
 env:
+  RUFF_VERSION: "0.16.8"
+  WPS_VERSION: "1.9.0"
   PYREFLY_VERSION: "1.4.1"
 
 jobs:
@@ -27,17 +30,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Ruff и wemake-python-styleguide
-        uses: pre-commit/action@v3.0.1
-
       - uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.11"
           enable-cache: true
+
+      - name: Ruff и wemake-python-styleguide
+        run: |
+          status=0
+          echo "::group::ruff check"
+          uvx "ruff==${RUFF_VERSION}" check . || status=1
+          echo "::endgroup::"
+          echo "::group::ruff format"
+          uvx "ruff==${RUFF_VERSION}" format --check . || status=1
+          echo "::endgroup::"
+          for package in packages/md-gost packages/md-gost-lint packages/md-gost-build packages/idef0; do
+            echo "::group::wemake-python-styleguide ($package)"
+            if ! uvx --from flake8 --with "wemake-python-styleguide==${WPS_VERSION}" flake8 --config="$package/setup.cfg" "$package"; then
+              status=1
+            fi
+            echo "::endgroup::"
+          done
+          exit "$status"
 
       - name: Окружения для Pyrefly
         run: |
@@ -94,7 +108,7 @@ jobs:
       - name: Собрать VSIX
         run: |
           npm ci
-          npm run package -- --allow-missing-repository
+          npm run package
 
       - uses: actions/upload-artifact@v4
         with:

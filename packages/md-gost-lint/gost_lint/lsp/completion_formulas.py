@@ -120,7 +120,7 @@ def _symbols(latex: str) -> list[str]:
 def _token(match: re.Match[str]) -> str:
     command = match.group("command")
     if command is not None:
-        return "" if command in LAYOUT else f"\\{command}"
+        return "" if command in LAYOUT else rf"\{command}"
     name = match.group("name")
     braced = match.group("braced")
     if braced is not None:
