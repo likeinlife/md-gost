@@ -2,12 +2,14 @@
 # Ruff 0.16.8 и wemake-python-styleguide 1.9.0 — как в .pre-commit-config.yaml.
 # Pyrefly 1.4.1 — как в packages/idef0/uv.lock.
 # Push только в main: иначе один коммит в pull request запускает workflow дважды.
+# Тег публикует GitHub Release с wheel, VSIX и архивом Zed.
 
 name: Сборка и проверки
 
 on:
   push:
     branches: [main]
+    tags: ["*"]
   pull_request:
   workflow_dispatch:
 
@@ -144,3 +146,33 @@ jobs:
           name: zed-extension
           path: editors/zed/md-gost-lsp.tar.gz
           if-no-files-found: error
+
+  release:
+    name: GitHub Release
+    if: github.ref_type == 'tag'
+    needs: [checks, wheel, vscode, zed]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: release
+
+      - name: Опубликовать релиз
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          shopt -s nullglob
+          files=(
+            release/python-wheel/*.whl
+            release/vscode-extension/*.vsix
+            release/zed-extension/*.tar.gz
+          )
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "${files[@]}" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "${files[@]}" \
+              --title "$GITHUB_REF_NAME" \
+              --generate-notes
+          fi
