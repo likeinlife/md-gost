@@ -15,6 +15,7 @@
 | `example/` | Демонстрационный документ со своим `book.toml` |
 | `editors/zed/`, `editors/vscode/` | Расширения редактора поверх `md-gost lsp` |
 | `.claude/skills/gost-doc/` | Правила текста, которые сборка не проверяет |
+| `.claude/skills/idef0/` | Правила диаграмм IDEF0 в главах |
 
 У `packages/md-gost-postlint/` своего манифеста нет: его подключает корневой
 `pyproject.toml`. У остальных пакетов свой `pyproject.toml`, и настройки Ruff,

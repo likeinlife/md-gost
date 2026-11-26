@@ -7,16 +7,14 @@ from gost_lint.markdown import Document
 from gost_lint.markdown.refs import strip_code
 from gost_lint.rules.registry import rule
 from gost_lint.spacing import EXTRA_SPACE, spaces
+from gost_lint.typography import SKIP_KINDS, hyphen_repairs, quote_issues
 
 FileIssue = Iterator[tuple[int, int, str]]
 
-HYPHEN_DASH = re.compile(r"(?<=[\w»)]) - (?=[\w«(])")
-STRAIGHT_QUOTE = re.compile(r'"')
 DASH_AS_BULLET = re.compile(r"^\s{0,3}[—–](?=\s)")
 CYRILLIC = re.compile(r"[а-яёА-ЯЁ]")
 LATIN = re.compile(r"[a-zA-Z]")
 WORD = re.compile(r"[\wа-яёА-ЯЁ]+")
-SKIP_KINDS = ("code", "diagram", "listing", "comment", "bib_marker", "formula")
 
 
 def _lines(doc: Document) -> Iterator[tuple[int, str]]:
@@ -30,22 +28,14 @@ def _lines(doc: Document) -> Iterator[tuple[int, str]]:
 @rule("TYPO001", "warning", "дефис вместо тире")
 def hyphen_as_dash(doc: Document) -> FileIssue:
     """Handle hyphen as dash."""
-    for line, text in _lines(doc):
-        for found in HYPHEN_DASH.finditer(text):
-            yield (
-                line,
-                found.start() + 1,
-                "дефис между словами — нужно тире «—» (сборка сама заменит его на короткое)",
-            )
+    for repair in hyphen_repairs(doc):
+        yield repair.finding()
 
 
 @rule("TYPO002", "warning", "прямые кавычки вместо «ёлочек»")
 def straight_quotes(doc: Document) -> FileIssue:
     """Handle straight quotes."""
-    for line, text in _lines(doc):
-        found = STRAIGHT_QUOTE.search(text)
-        if found:
-            yield (line, found.start() + 1, 'прямые кавычки " — в русском тексте ставятся «ёлочки»')
+    yield from quote_issues(doc)
 
 
 @rule("TYPO003", "warning", "лишние пробелы")

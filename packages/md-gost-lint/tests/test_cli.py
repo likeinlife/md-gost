@@ -72,12 +72,17 @@ class TestGroup2:
     def test_fix_repairs_mechanical_only(self, fixtures: Path, sandbox: Path) -> None:
         target = sandbox / TYPO_FILE
         target.write_text((fixtures / TYPO_FILE).read_text(encoding=UTF8), encoding=UTF8)
-        before = rules_found(target, NO_CONFIG)
         cli(str(target), FIX, NO_CONFIG)
         after = rules_found(target, NO_CONFIG)
 
-        assert {"TYPO003", "TYPO005"} & after == set()
-        assert {"TYPO001", "TYPO002", "TYPO004"} & before <= after
+        assert {"TYPO001", "TYPO002", "TYPO003", "TYPO005"} & after == set()
+        assert {"TYPO004", "TYPO006"} <= after
+        text = target.read_text(encoding=UTF8)
+        assert "дефис — вместо тире, «прямые кавычки»" in text
+        assert "сиcтема" in text
+        for line in (fixtures / TYPO_FILE).read_text(encoding=UTF8).splitlines():
+            if line.lstrip()[:1] in "—–":
+                assert line in text.splitlines()
 
     def test_repository_lints_without_crashing(self, repo: Path) -> None:
         """The repository sources: findings are expected, an exception is not."""

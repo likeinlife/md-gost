@@ -115,6 +115,7 @@ VS Code и Cursor — [README расширения](editors/vscode/README.md).
 
 - [Синтаксис разметки](packages/md-gost-build/README.md)
 - [Правила текста](.claude/skills/gost-doc/SKILL.md)
+- [Правила диаграмм IDEF0](.claude/skills/idef0/SKILL.md)
 - [Линтер](packages/md-gost-lint/README.md)
 - [Постлинтер](packages/md-gost-postlint/README.md)
 - [Команда `md-gost`](packages/md-gost/README.md)

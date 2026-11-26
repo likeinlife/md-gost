@@ -2,6 +2,7 @@
 
 from gost_lint.lsp.completion_blocks import block_suggestions
 from gost_lint.lsp.completion_formulas import formula_symbol_suggestions
+from gost_lint.lsp.completion_heading_attrs import heading_attribute_suggestions
 from gost_lint.lsp.completion_listing_paths import listing_path_suggestions
 from gost_lint.lsp.completion_markup import markup_suggestions
 from gost_lint.lsp.completion_paths import path_suggestions
@@ -36,9 +37,9 @@ def complete(
     links = _links(document, work, line, column)
     if links is not None:
         return links
-    symbols = formula_symbol_suggestions(document, line, column)
-    if symbols is not None:
-        return symbols
+    typed = _typed(document, line, column)
+    if typed is not None:
+        return typed
     if source.strip() in ROW_PREFIXES and not source[column:].strip():
         row = _row(document, line, source, snippets=options.snippets)
         if row is not None:
@@ -50,6 +51,13 @@ def complete(
         column,
         snippets=options.snippets,
     )
+
+
+def _typed(document: Document, line: int, column: int) -> list[Suggestion] | None:
+    symbols = formula_symbol_suggestions(document, line, column)
+    if symbols is not None:
+        return symbols
+    return heading_attribute_suggestions(document, line, column)
 
 
 def _links(document: Document, work: Work, line: int, column: int) -> list[Suggestion] | None:

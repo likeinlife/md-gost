@@ -11,11 +11,12 @@ from gost_lint.repairs import Repair, applicable_repairs
 from gost_lint.rules.numbering import heading_repairs
 from gost_lint.rules.registry import load_all as load_rules
 from gost_lint.spacing import WHITESPACE_RULES, spaces
+from gost_lint.typography import HYPHEN, QUOTES, typography_repairs
 from gost_lint.work import Work
 
 NUMBER_DOT = "STRUCT008"
 STRUCTURAL_NUMBER = "STRUCT009"
-FIXABLE = (NUMBER_DOT, STRUCTURAL_NUMBER, *WHITESPACE_RULES)
+FIXABLE = (NUMBER_DOT, STRUCTURAL_NUMBER, HYPHEN, QUOTES, *WHITESPACE_RULES)
 NEWLINE = re.compile(r"(\r\n|\r|\n)")
 
 
@@ -29,11 +30,13 @@ def repairs(
         return []
     scope = scope or document.format_scope
     changes = [entry for entry in spaces(document, scope) if entry.rule in rules]
-    return changes + [
+    changes.extend(
         entry
         for entry in heading_repairs(document)
         if entry.rule in rules and scope.editable(entry.line, entry.start, entry.end)
-    ]
+    )
+    changes.extend(typography_repairs(document, rules))
+    return changes
 
 
 def enabled_rules(config: Chain, path: Path, selected: Collection[str] = FIXABLE) -> set[str]:

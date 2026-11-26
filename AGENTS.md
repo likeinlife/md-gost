@@ -29,6 +29,7 @@ Pandoc, PlantUML and Graphviz live in `INSTALL.md`. Contributor checks live in
 ├── AGENTS.md
 ├── example/                   # demonstration document (book.toml + example.docx)
 ├── .claude/skills/gost-doc/   # prose rules for writing chapters
+├── .claude/skills/idef0/      # IDEF0 diagram rules for chapters
 ├── editors/                   # Zed and VS Code / Cursor extensions
 └── packages/
     ├── md-gost/               # the only command: imports the other packages
@@ -133,7 +134,7 @@ with `chapters` and `output`, then build. `example/` is the reference for markup
 
 ## Authoring conventions
 
-Two sources, split by who enforces the rule:
+Sources, split by who enforces the rule:
 
 - **Markup syntax** — diagrams, table markers, cross-references, bibliography,
   raster images, GOST frame, Word styles: `packages/md-gost-build/README.md`. This is the
@@ -143,8 +144,13 @@ Two sources, split by who enforces the rule:
   (`.claude/skills/gost-doc/SKILL.md`). The build does not check any of it, so a
   document that builds cleanly can still be wrong. Load the skill before writing or
   editing any `.md` listed in a `book.toml`.
+- **IDEF0 diagrams** — arrow roles, decomposition limits, `.idef0` text and
+  `idef0.Decomposition`: the `idef0` skill (`.claude/skills/idef0/SKILL.md`).
+  Load it before creating or editing an IDEF0 diagram, a `.idef0` file, a
+  `{.idef0}` block, or a Python module that draws one for a `book.toml`
+  document. Chapter prose around the figure still follows `gost-doc`.
 
-Do not restate either set of rules here — a third copy is what this split removed.
+Do not restate these rules here — another copy is what this split removed.
 
 `packages/md-gost-lint/` checks the mechanical part of both sets and runs as the first step
 of every build. Run it directly while editing — it is instant and needs no venv:
