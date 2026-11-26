@@ -319,14 +319,14 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "matplotlib" }]
+requires-dist = [{ name = "matplotlib", specifier = "==3.11.2" }]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "pyrefly" },
-    { name = "pytest", specifier = ">=8" },
+    { name = "pyrefly", specifier = "==1.4.1" },
+    { name = "pytest", specifier = "==9.2.0" },
     { name = "ruff", specifier = "==0.16.8" },
-    { name = "seaborn" },
+    { name = "seaborn", specifier = "==0.13.2" },
     { name = "wemake-python-styleguide", specifier = "==1.9.0" },
 ]
 

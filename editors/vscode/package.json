@@ -6,6 +6,10 @@
   "publisher": "md-gost",
   "author": "md-gost",
   "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/likeinlife/md-gost.git"
+  },
   "engines": {
     "vscode": "^1.96.0"
   },

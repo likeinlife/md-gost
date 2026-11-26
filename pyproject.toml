@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools==84.2.1"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,15 +8,15 @@ version = "0.1.0"
 description = "Сборка и проверка документов по ГОСТ из Markdown"
 requires-python = ">=3.11"
 dependencies = [
-    "pypandoc>=1.17",
-    "python-docx>=1.1.0",
-    "lxml>=5.0.0",
-    "typer>=0.15",
+    "pypandoc==1.17",
+    "python-docx==1.2.0",
+    "lxml==6.1.3",
+    "typer==0.29.2",
 ]
 
 [project.optional-dependencies]
-plots = ["matplotlib", "seaborn"]
-lsp = ["pygls>=2.1,<3"]
+plots = ["matplotlib==3.11.2", "seaborn==0.13.2"]
+lsp = ["pygls==2.1.1"]
 
 [project.scripts]
 md-gost = "md_gost.cli:main"
