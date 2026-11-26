@@ -53,18 +53,16 @@ jobs:
           done
           exit "$status"
 
-      - name: Окружения для Pyrefly
-        run: |
-          for package in packages/md-gost packages/md-gost-lint packages/md-gost-build packages/idef0; do
-            uv sync --frozen --group dev --no-install-project --directory "$package"
-          done
-
       - name: Pyrefly
         run: |
           status=0
           for package in packages/md-gost packages/md-gost-lint packages/md-gost-build packages/idef0; do
             echo "::group::$package"
-            if ! (cd "$package" && uvx "pyrefly==${PYREFLY_VERSION}" check); then
+            if ! (
+              cd "$package" &&
+              uv sync --project . --frozen --group dev --no-install-project &&
+              uvx "pyrefly==${PYREFLY_VERSION}" check --python-interpreter-path .venv/bin/python
+            ); then
               status=1
             fi
             echo "::endgroup::"
